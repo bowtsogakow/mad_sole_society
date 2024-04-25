@@ -35,6 +35,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  firebase_core: ^2.27.0
+  cloud_firestore: ^4.15.8
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +59,38 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets: 
+    - lib/Icons/
+  
+  fonts:
+    - family: Poppins-2
+      fonts:
+        - asset: Poppins/Poppins-Bold.ttf
+      
+    - family: Poppins-3
+      fonts: 
+        - asset: Poppins/Poppins-Medium.ttf
+
+    - family: Poppins
+      fonts:
+        
+        - asset: Poppins/Poppins-Black.ttf
+        - asset: Poppins/Poppins-BlackItalic.ttf
+        - asset: Poppins/Poppins-Bold.ttf
+        - asset: Poppins/Poppins-BoldItalic.ttf
+        - asset: Poppins/Poppins-ExtraBold.ttf
+        - asset: Poppins/Poppins-ExtraBoldItalic.ttf
+        - asset: Poppins/Poppins-Italic.ttf
+        - asset: Poppins/Poppins-Light.ttf
+        - asset: Poppins/Poppins-LightItalic.ttf
+        - asset: Poppins/Poppins-Medium.ttf
+        - asset: Poppins/Poppins-MediumItalic.ttf
+        - asset: Poppins/Poppins-Regular.ttf
+        - asset: Poppins/Poppins-SemiBold.ttf
+        - asset: Poppins/Poppins-SemiBoldItalic.ttf
+        - asset: Poppins/Poppins-Thin.ttf
+        - asset: Poppins/Poppins-ThinItalic.ttf
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
