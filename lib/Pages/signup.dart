@@ -2,52 +2,9 @@
 
 import "package:sole_society/Database/database.dart";
 import 'package:flutter/material.dart';
+import "package:sole_society/Pages/Design.dart" as design;
 
-class sign_up_text_style {
-  
-  static final TextStyle sign_up_text_style1 = TextStyle(
-        fontFamily: "Poppins-3",
-        color: Color(0xFF3a3937), 
-        fontWeight: FontWeight.w600,
-        fontSize: 16, 
-        ); 
-  
-  static final TextStyle sign_up_text_style2 = TextStyle(
-        fontFamily: "Poppins-3",
-        color: Color(0xFFF2F2F2), 
-        fontWeight: FontWeight.w600,
-        fontSize: 16, 
-        ); 
-}
 
-class Border {
-
-  OutlineInputBorder enabled = OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFFF2F2F2),
-                                    width : 2.0,
-                                  )
-                                );
-
-  OutlineInputBorder error = OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: Color(0xFFF2F2F2),
-                                  width : 2.0,
-                                )
-                              );
-
-  OutlineInputBorder focus = OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFFeb5e28),
-                                    width : 2.0,
-                                  )
-                                ); 
-
-  
-}
 
 class authentication_methods {
 
@@ -205,7 +162,7 @@ class sign_up_state extends State<sign_up>{
   Widget build (BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color(0xFF252422), 
+      backgroundColor: const Color(0xFFFAFAFA), 
       body: Center (
         child : LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
@@ -221,7 +178,7 @@ class sign_up_state extends State<sign_up>{
                   
                   child : Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF2F2F2),
+                      color: const Color(0xFFFAFAFA),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     
@@ -268,12 +225,12 @@ class sign_up_state extends State<sign_up>{
                                 errorStyle: TextStyle(height: 0.1, fontSize: 10),
                                 errorMaxLines: 1,
                                 labelText: 'Username', // Placeholder text
-                                labelStyle: sign_up_text_style.sign_up_text_style1,
+                                labelStyle: design.text_style.text_style1,
                                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                                focusedErrorBorder: border.focus,
-                                errorBorder: border.error,
-                                enabledBorder: border.enabled,
-                                focusedBorder: border.focus,
+                                focusedErrorBorder: design.input_border.focus,
+                                errorBorder: design.input_border.error,
+                                enabledBorder: design.input_border.enabled,
+                                focusedBorder: design.input_border.focus,
                                 ), 
                               ),
                             ),
@@ -301,12 +258,12 @@ class sign_up_state extends State<sign_up>{
                                 errorStyle: TextStyle(height: 0.1, fontSize: 10),
                                 errorMaxLines: 1,          
                                 labelText: 'Email', // Placeholder text
-                                labelStyle: sign_up_text_style.sign_up_text_style1,
+                                labelStyle: design.text_style.text_style1,
                                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                                errorBorder: border.error,
-                                enabledBorder: border.enabled,
-                                focusedBorder: border.focus,
-                                focusedErrorBorder: border.focus,
+                                focusedErrorBorder: design.input_border.focus,
+                                errorBorder: design.input_border.error,
+                                enabledBorder: design.input_border.enabled,
+                                focusedBorder: design.input_border.focus,
                               ),
                             ),
                           ),
@@ -334,12 +291,12 @@ class sign_up_state extends State<sign_up>{
                                 errorStyle: TextStyle(height: 0.1, fontSize: 10),
                                 errorMaxLines: 1,
                                 labelText: 'Password', // Placeholder text
-                                labelStyle: sign_up_text_style.sign_up_text_style1,
+                                labelStyle: design.text_style.text_style1,
                                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                                errorBorder: border.error,
-                                enabledBorder: border.enabled,
-                                focusedBorder: border.focus,
-                                focusedErrorBorder: border.focus,
+                                focusedErrorBorder: design.input_border.focus,
+                                errorBorder: design.input_border.error,
+                                enabledBorder: design.input_border.enabled,
+                                focusedBorder: design.input_border.focus,
                               ),
                             ),
                           ),
@@ -366,12 +323,12 @@ class sign_up_state extends State<sign_up>{
                                 errorStyle: TextStyle(height: 0.1, fontSize: 10),
                                 errorMaxLines: 1,
                                 labelText: 'Confirm Password', // Placeholder text
-                                labelStyle: sign_up_text_style.sign_up_text_style1,
+                                labelStyle: design.text_style.text_style1,
                                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                                errorBorder: border.error,
-                                enabledBorder: border.enabled,
-                                focusedBorder: border.focus,
-                                focusedErrorBorder: border.focus,
+                                focusedErrorBorder: design.input_border.focus,
+                                errorBorder: design.input_border.error,
+                                enabledBorder: design.input_border.enabled,
+                                focusedBorder: design.input_border.focus,
                               ),
                             ),
                           ),
@@ -419,7 +376,7 @@ class sign_up_state extends State<sign_up>{
                               },                 
                               child: Text( // ignore: sort_child_properties_last
                                 'SIGN UP',
-                                style: sign_up_text_style.sign_up_text_style2, // Set text color,
+                                style: design.text_style.text_style2, // Set text color,
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFFeb5e28), // Set button color

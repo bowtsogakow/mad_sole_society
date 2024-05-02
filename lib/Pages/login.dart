@@ -2,8 +2,10 @@
 
 import "package:sole_society/Database/database.dart";
 import 'package:flutter/material.dart';
-import "package:sole_society/login_signup/signup.dart" as sign_up;
-
+import 'package:sole_society/Pages/Landing.dart';
+import 'package:sole_society/Pages/signup.dart' as sign_up;
+import 'package:sole_society/Pages/Design.dart' as design;
+import 'package:sole_society/Database/database.dart' as db;
 
 class log_in extends StatefulWidget {
  
@@ -14,10 +16,9 @@ class log_in extends StatefulWidget {
 
 class  log_in_State extends State<log_in> {
 
+
   user_db DB = user_db();
   sign_up.authentication_methods auth = sign_up.authentication_methods();
-  sign_up.Border border = sign_up.Border();
-
 
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController(); 
@@ -71,7 +72,7 @@ class  log_in_State extends State<log_in> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color(0xFF252422),
+      backgroundColor: const Color(0xFFFAFAFA),
       body: Center (
         child : LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
@@ -87,7 +88,7 @@ class  log_in_State extends State<log_in> {
 
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF2F2F2),
+                      color: const Color(0xFFFAFAFA),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child : Column (
@@ -127,17 +128,17 @@ class  log_in_State extends State<log_in> {
                               controller : username, 
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: Color(0xFFFFFFFF),
                                 errorText: errorUsername,
                                 errorStyle: TextStyle(height: 0.1, fontSize: 10),
                                 errorMaxLines: 1,
                                 labelText: 'Username', // Placeholder text
-                                labelStyle: sign_up.sign_up_text_style.sign_up_text_style1,
+                                labelStyle: design.text_style.text_style1,
                                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                                focusedErrorBorder: border.focus,
-                                errorBorder: border.error,
-                                enabledBorder: border.enabled,
-                                focusedBorder: border.focus,
+                                focusedErrorBorder: design.input_border.focus,
+                                errorBorder: design.input_border.error,
+                                enabledBorder: design.input_border.enabled,
+                                focusedBorder: design.input_border.focus,
                                 ), 
                               ),
                             ),
@@ -159,17 +160,17 @@ class  log_in_State extends State<log_in> {
                               controller : password, 
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: Color(0xFFFFFFFF),
                                 errorText: errorPassword,
                                 errorStyle: TextStyle(height: 0.1, fontSize: 10),
                                 errorMaxLines: 1,
                                 labelText: 'Password', // Placeholder text
-                                labelStyle: sign_up.sign_up_text_style.sign_up_text_style1,
+                                labelStyle: design.text_style.text_style1,
                                 contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-                                focusedErrorBorder: border.focus,
-                                errorBorder: border.error,
-                                enabledBorder: border.enabled,
-                                focusedBorder: border.focus,
+                                focusedErrorBorder: design.input_border.focus,
+                                errorBorder: design.input_border.error,
+                                enabledBorder: design.input_border.enabled,
+                                focusedBorder: design.input_border.focus,
                                 ), 
                               ),
                             ),
@@ -199,7 +200,15 @@ class  log_in_State extends State<log_in> {
                                     builder: (context) => AlertDialog(
                                       actions: [
                                         TextButton(
-                                          onPressed: (){ Navigator.of(context).pop(); }, 
+                                          onPressed: () async { 
+                                            int user_id = await DB.get_ID(username.text, password.text) as int;
+                                            
+
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.push(
+                                              context,
+                                               MaterialPageRoute(builder: (context) => Landing(user_id:user_id)),
+                                            ); }, 
                                           child: Text("Proceed")
                                         ),                            
                                       ],
@@ -217,7 +226,7 @@ class  log_in_State extends State<log_in> {
                               },                 
                               child: Text( // ignore: sort_child_properties_last
                                 'LOG IN',
-                                style: sign_up.sign_up_text_style.sign_up_text_style2, // Set text color,
+                                style: design.text_style.text_style2, // Set text color,
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xFFeb5e28), // Set button color
@@ -240,6 +249,5 @@ class  log_in_State extends State<log_in> {
       )
     );
   }
-
 
 }

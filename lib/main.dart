@@ -4,9 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sole_society/BarTop/bar_top.dart';
-import 'package:sole_society/login_signup/signup.dart';
-import 'package:sole_society/login_signup/login.dart';
-import 'package:sole_society/login_signup/Opening.dart';
+import 'package:sole_society/Pages/Landing.dart';
+import 'package:sole_society/Pages/signup.dart';
+import 'package:sole_society/Pages/login.dart';
+import 'package:sole_society/Pages/Opening.dart';
+import 'package:sole_society/Database/database.dart' as DB;
 import 'dart:io' as io;
 
 void main() async {
@@ -31,7 +33,9 @@ void main() async {
         projectId: "madsolesociety"));
   }
 
+
   runApp(const MyApp());
+  
 }
 
 class MyApp extends StatelessWidget {
@@ -45,7 +49,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
        
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF333333)),
         useMaterial3: true,
       ),
       home: Opening(),
@@ -53,57 +57,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
- 
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    
-    return Scaffold(
-      appBar: TopBar(),
-      body: Center(
-
-        child: Column(
-          
-          mainAxisAlignment: MainAxisAlignment.center,
-
-          children: <Widget>[
-
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            )
-
-          ]
-        )
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add)
-      ) 
-    );
-  }
-}

@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:sole_society/login_signup/login.dart';
-import "package:sole_society/login_signup/signup.dart" as sign_up;
+import 'package:sole_society/Pages/login.dart';
+import 'package:sole_society/Pages/signup.dart' as sign_up;
 import "package:sole_society/Database/database.dart" as DB;
+import 'package:sole_society/Pages/Design.dart' as design;
 class Opening extends StatelessWidget{
 
   @override 
 
   Widget build (BuildContext context){
     return Scaffold(
-      backgroundColor: Color(0xFFF2F2F2),
+      backgroundColor:Color(0xFFFAFAFA),
       body : Center(
         child: Column(
           children: [
 
             const Flexible (
-              flex : 5, 
+              flex : 0, 
               fit : FlexFit.loose,
-              child : SizedBox(height: 200),
+              child : SizedBox(height: 85),
             ),
             Image.asset(
-              'lib/Icons/Logo-Mad.png', 
-              height : 120, 
-              width : 250, 
+              'lib/Icons/Cash-up-logo.png', 
+              height : 210, 
+              width : 350, 
               fit : BoxFit.cover, 
             ),
 
             const Flexible (
-              flex : 4, 
+              flex : 0, 
               fit : FlexFit.loose,
               child : SizedBox(height: 170),
             ),
@@ -48,9 +49,9 @@ class Opening extends StatelessWidget{
                     
                     print("hello");
                   },                 
-                  child: Text( // ignore: sort_child_properties_last
+                  child: const Text( // ignore: sort_child_properties_last
                     'SIGN UP',
-                    style: sign_up.sign_up_text_style.sign_up_text_style2, // Set text color,
+                    style: design.text_style.text_style2, // Set text color,
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFeb5e28), // Set button color
@@ -80,9 +81,9 @@ class Opening extends StatelessWidget{
                       MaterialPageRoute(builder: (context) => log_in()),
                     );
                   },                 
-                  child: Text( // ignore: sort_child_properties_last
+                  child: const Text( // ignore: sort_child_properties_last
                     'LOG IN',
-                    style: sign_up.sign_up_text_style.sign_up_text_style2, // Set text color,
+                    style: design.text_style.text_style2, // Set text color,
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFeb5e28), // Set button color
