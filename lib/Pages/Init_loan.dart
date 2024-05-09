@@ -4,27 +4,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sole_society/Pages/Design.dart' as design;
 import 'package:sole_society/Database/database.dart' as DB;
+import 'package:sole_society/Pages/Landing.dart';
+import 'package:sole_society/Pages/Loan_history.dart';
 
 class init_loan extends StatefulWidget {
-  const init_loan({super.key});
+  const init_loan({super.key, required this.user_id});
+
+  final int user_id; 
 
   @override
-  State<init_loan> createState() => init_loan_state();
+  State<init_loan> createState() => init_loan_state(user_id);
 }
 
 class init_loan_state extends State<init_loan> {
   
+  init_loan_state(this.user_id); 
+
+  int user_id; 
   
-  String ? loan_type = "";
-  TextEditingController? loan_amount = TextEditingController(); 
-  String ? term_duration = ""; 
+  String loan_type = "";
+  TextEditingController? loan_amount = TextEditingController();
+  double interest_rate = 0.0; 
+  String term_duration = "";
+  double interest_interval = 0.0;     
+  double interest = 0.0; 
+  double total_loan = 0.0; 
+
+  DB.loan_funds_db loan = DB.loan_funds_db();
 
 
   String? validateLoanAmount(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a loan amount.';
     }
-    double amount = double.parse(value);
+    double amount = double.parse(value).toDouble();
     switch (loan_type) {
       case 'Micro Loan':
         if (amount < 5000 || amount > 50000) {
@@ -46,6 +59,16 @@ class init_loan_state extends State<init_loan> {
     }
     return null; 
       // No error, validation successful
+  }
+
+  void setLoanNull(){
+    loan_type = ""; 
+    loan_amount!.text = ""; 
+    interest_rate = 0; 
+    term_duration = ""; 
+    interest_interval = 0; 
+    interest = 0;
+    total_loan = 0; 
   }
   
   @override
@@ -83,7 +106,7 @@ class init_loan_state extends State<init_loan> {
                   Align(
                     alignment: Alignment.topLeft,
                     child : Text(
-                      "₱ 0",
+                      "PHP 0",
                       style : design.text_style.text_style3,
                     ), 
                   ),
@@ -95,17 +118,17 @@ class init_loan_state extends State<init_loan> {
           ), 
 
           const Flexible (
-          flex : 2, 
+          flex : 1, 
           fit : FlexFit.loose,
-          child :SizedBox(height: 170),
+          child :SizedBox(height: 140),
           ),  
           
           Text("There are no active loans"),
 
           const Flexible (
-          flex : 2, 
+          flex : 1, 
           fit : FlexFit.loose,
-          child :SizedBox(height: 170),
+          child :SizedBox(height: 140),
           ),  
 
           Flexible(
@@ -115,14 +138,15 @@ class init_loan_state extends State<init_loan> {
                 height: 30,
                 width: 200,
                 child : ElevatedButton(
+              
                   onPressed: () async {                    
-                    
+                    setLoanNull(); 
                     showDialog(context: context, 
                       builder: (context) => AlertDialog(
                         actions :  [
                           TextButton(
                           onPressed: (){
-                            if(loan_type!.isEmpty){
+                            if(loan_type.isEmpty){
                               Navigator.pop(context); 
                             }
                             else{
@@ -132,7 +156,7 @@ class init_loan_state extends State<init_loan> {
                                   actions : [
                                     TextButton(
                                       onPressed: (){
-                                        if (loan_type!.isEmpty) {
+                                        if (loan_type.isEmpty) {
                                           Navigator.pop(context); // Close the first AlertDialog
                                           return; // Exit the function if no loan type selected
                                         }
@@ -150,13 +174,77 @@ class init_loan_state extends State<init_loan> {
                                           Navigator.pop(context);
                                           showDialog(context: context, 
                                             builder: (context) => AlertDialog(
-                                            
-                                            title : Text("Enter Amount"),
+                                            actions : [
+                                              TextButton(
+                                                onPressed: (){
+                                                  double initial_amount = double.parse(loan_amount!.text).toDouble();
+                                                  Map interest_info = loan.calculate_interest(initial_amount, interest_rate, interest_interval);
+
+                                                  interest = interest_info["interest"];
+                                                  total_loan = interest_info["total_loan"];
+
+                                                  Navigator.pop(context, true);
+                                                  showDialog(
+                                                    context: context, 
+                                                    builder: (context) => AlertDialog(
+                                                      actions : [
+                                                        TextButton(
+                                                          onPressed: (){
+                                                            Navigator.pop(context, true); 
+                                                            loan.make_loan(user_id, loan_type, initial_amount, interest_rate, term_duration, interest, total_loan);
+                                                            Navigator.pop(context, true); 
+                                                            Navigator.push(
+                                                              context, 
+                                                              MaterialPageRoute(builder: (context) => Landing(user_id:user_id, index : 1)),);
+                                                            
+                                                          }, 
+                                                          child: Text("Confirm",
+                                                          style: design.text_style.text_style9,
+                                                          ))
+                                                      ],
+                                                      title : Text("Loan Summary", 
+                                                      style : design.text_style.text_style7),
+                                                      contentPadding: EdgeInsets.symmetric(horizontal : 10, vertical : 20,),
+                                                      content : SizedBox(
+                                                        height: 210,
+                                                        width : 250, 
+                                                        child : display_loan_info(
+                                                          loan_type : loan_type ,
+                                                          initial_amount : initial_amount,
+                                                          interest_rate : interest_rate,
+                                                          term_duration : term_duration,
+                                                          interest_interval : interest_interval,
+                                                          interest : interest,
+                                                          total_loan : total_loan),  
+                                                      )
+                                                    ) 
+                                                    ); 
+                                                  
+                                             
+
+                                                }, 
+                                                child: Text("Confirm", 
+                                                style: design.text_style.text_style9,
+                                                )),
+
+                                            ], 
+                                            title : Text("Choose Loan Duration", 
+                                            style : design.text_style.text_style7),
                                             contentPadding: EdgeInsets.symmetric(horizontal : 10, vertical : 20,),
                                             content : SizedBox(
-                                              height: 100,
-                                              width : 250, 
+                                              height: 200,
+                                              width : 300, 
                                               child : duration(
+                                                onIntervalChanged: (selectedValue){
+                                                  setState(() {
+                                                    interest_interval = selectedValue.toDouble();
+                                                  });
+                                                },
+                                                onInterestChanged: (selectedValue){
+                                                  setState(() {
+                                                    interest_rate = selectedValue.toDouble();  
+                                                  });
+                                                },
                                                 loan_type: loan_type,
                                                 onGroupValueChanged: (selectedValue){
                                                   setState(() {
@@ -170,10 +258,13 @@ class init_loan_state extends State<init_loan> {
                                         }
 
                                       }, 
-                                      child: Text("Confirm")
+                                      child: Text("Confirm",
+                                      style: design.text_style.text_style9,
+                                      )
                                       )
                                   ], 
-                                  title : Text("Enter Amount"),
+                                  title : Text("Enter Amount", 
+                                  style : design.text_style.text_style7),
                                   contentPadding: EdgeInsets.symmetric(horizontal : 10, vertical : 20,),
                                   content : SizedBox(
                                     height: 100,
@@ -189,13 +280,16 @@ class init_loan_state extends State<init_loan> {
                               ); 
                             }
                           },
-                          child : Text("Confirm")
+                          child : Text("Confirm", 
+                          style: design.text_style.text_style9,
+                          )
                           ),
                         ],
-                        title : Text("Choose Loan Type"),
+                        title : Text("Choose Loan Type",
+                        style : design.text_style.text_style7),
                         contentPadding: EdgeInsets.symmetric(horizontal : 10, vertical : 20,),
                         content : SizedBox(
-                          height: 150,
+                          height: 200,
                           width : 250, 
                           child : loanTypeRadio(
                             onGroupValueChanged: (selectedValue){
@@ -221,7 +315,36 @@ class init_loan_state extends State<init_loan> {
                   ),              
                 ),
               )
+          ),
+
+          const Flexible (
+            flex : 0, 
+            fit : FlexFit.loose,
+            child :SizedBox(height: 30),
+            ),  
+
+          SizedBox(
+            height: 30,
+            width: 200,
+            child : ElevatedButton(
+              onPressed: () async {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: ((context) => loan_history(user_id: user_id,))));  
+                  
+                
+              },
+              child: Text( // ignore: sort_child_properties_last
+                'VIEW PAST LOANS',
+                style: design.text_style.text_style2, // Set text color,
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: design.custom_color.c_orange, // Set button color
+                // backgroundColor: Colors.orange,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)), 
+              ),   
             ),
+          )
 
 
         ],
@@ -243,6 +366,14 @@ class loanTypeRadio extends StatefulWidget {
 class _loanRadioState extends State<loanTypeRadio> {
 
   String ? GroupValue = ""; 
+  List loan_description = [
+    "Loanable amount is from 5,000 pesos up to 50,000 pesos",
+    "Loanable amount is from 50,000 pesos up to 500,000 pesos",
+    "Loanable amount is from 500,000 pesos up to 5,000,000 pesos",
+
+  ]; 
+
+  String description = ""; 
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -257,8 +388,8 @@ class _loanRadioState extends State<loanTypeRadio> {
                     onChanged: (value) {
                       setState(() {
                         GroupValue = value as String?; 
+                        description = loan_description[2];
                         widget.onGroupValueChanged(GroupValue!);
-                        print("1");
                       });
                       
                     } ,
@@ -269,7 +400,8 @@ class _loanRadioState extends State<loanTypeRadio> {
                     width: 5.0,
                   ), 
 
-                  Text("Housing Loan"), 
+                  Text("Housing Loan", 
+                  style : design.text_style.text_style1), 
                 ]
               ),
 
@@ -283,8 +415,8 @@ class _loanRadioState extends State<loanTypeRadio> {
                     onChanged: (value) {
                       setState(() {
                         GroupValue = value as String?; 
+                        description = loan_description[1];
                         widget.onGroupValueChanged(GroupValue!);
-                        print("2");
                       });
                     } ,
                   ),
@@ -293,7 +425,8 @@ class _loanRadioState extends State<loanTypeRadio> {
                     width: 5.0,
                   ), 
 
-                  Text("Medium Loan"), 
+                  Text("Medium Loan", 
+                  style : design.text_style.text_style1), 
                 ]
               ),
 
@@ -307,9 +440,8 @@ class _loanRadioState extends State<loanTypeRadio> {
                     onChanged: (value) {
                       setState(() {
                         GroupValue = value as String?; 
+                        description = loan_description[0];
                         widget.onGroupValueChanged(GroupValue!);
-                        print("3");
-                        print(GroupValue);
                       });
                     } ,
                   ),
@@ -318,10 +450,16 @@ class _loanRadioState extends State<loanTypeRadio> {
                     width: 5.0,
                   ), 
 
-                  Text("Micro Loan"), 
+                  Text("Micro Loan", 
+                  style : design.text_style.text_style1), 
                 ]
               ),
 
+              SizedBox(
+                height: 10,
+              ),
+
+              Text(description) 
             ],
           );
   }
@@ -344,9 +482,11 @@ class _loanAmountState extends State<loanAmount> {
 }
 
 class duration extends StatefulWidget {
-  const duration({super.key, required this.onGroupValueChanged, required this.loan_type});
+  const duration({super.key, required this.onGroupValueChanged, required this.loan_type, required this.onInterestChanged, required this.onIntervalChanged});
 
   final Function(String) onGroupValueChanged;
+  final Function(double) onInterestChanged; 
+  final Function(double) onIntervalChanged; 
   final String ? loan_type; 
 
   @override
@@ -357,20 +497,36 @@ class _durationState extends State<duration> {
 
   _durationState(this.loan_type); 
   final String ? loan_type; 
-
+  
+  double Interest = 0.0;  
   String duration = ""; 
-  List Options = [];
+  double Interval = 0; 
+  List loan_Options = [];
+  List interest_Options = []; 
+  List interval_Options = []; 
+  List text_interval = [];
 
   void setTermChoices(String ? choices){
 
     if(choices == "Housing Loan"){
-      Options = ["3 years", "6 years", "9 years", "12 years"]; 
+      loan_Options = ["3 years", "6 years", "9 years", "12 years"]; 
+      interest_Options = [0.09, 0.10, 0.11, 0.12];
+      interval_Options = [3, 6, 9, 12];
+      text_interval = [" (9% interest per year)", " (10% interest per year)", " (11% interest per year)", " (12% interest per year)"];
     }
     else if(choices == "Medium Loan"){
-      Options = ["6 months", "12 months", "18 months", "24 months"];
+      loan_Options = ["6 months ", "12 months", 
+      "18 months ", "24 months"];
+      interest_Options = [0.05, 0.05, 0.06, 0.06];
+      interval_Options = [1, 2, 3, 4]; 
+      text_interval = [" (5% interest per 6 months)", " (5% interest per 6 months)", " (6% interest per 6 months)", " (6% interest per 6 months)"];
     }
-    else if(choices == "Small Loan"){
-      Options = ["8 weeks", "12 weeks", "16 weeks", "20 weeks"];
+    else if(choices == "Micro Loan"){
+      loan_Options = ["8 weeks", "12 weeks", 
+      "16 weeks", "20 weeks"];
+      interest_Options = [0.04, 0.04, 0.04, 0.04];
+      interval_Options = [2, 3, 4, 5];
+      text_interval = [ " (4% interest per 4 weeks)", " (4% interest per 4 weeks)", " (4% interest per 4 weeks)", " (4% interest per 4 weeks)"];
     }
 
   }
@@ -391,12 +547,16 @@ class _durationState extends State<duration> {
                 children : [
                 
                   Radio(
-                    value: Options[0],
+                    value: loan_Options[0],
                     activeColor: design.custom_color.c_orange,
                     groupValue: duration,
                     onChanged: (value) {
                       setState(() {
+                        Interest = interest_Options[0].toDouble();
                         duration = value; 
+                        Interval = interval_Options[0].toDouble();
+                        widget.onIntervalChanged(Interval); 
+                        widget.onInterestChanged(Interest); 
                         widget.onGroupValueChanged(duration);
                       });
                       
@@ -408,7 +568,17 @@ class _durationState extends State<duration> {
                     width: 5.0,
                   ), 
 
-                  Text(Options[0]), 
+                  Text(loan_Options[0], 
+                  style : design.text_style.text_style6,
+                  ), 
+
+                  SizedBox(
+                    width: 10.0,
+                  ), 
+                  
+                  Text(text_interval[0], 
+                  style : design.text_style.text_style6,
+                  ), 
                 ]
               ),
 
@@ -416,12 +586,16 @@ class _durationState extends State<duration> {
                 children : [
                 
                   Radio(
-                    value: Options[1],
+                    value: loan_Options[1],
                     activeColor: design.custom_color.c_orange,
                     groupValue: duration,
                     onChanged: (value) {
                       setState(() {
+                        Interest = interest_Options[1].toDouble();
                         duration = value; 
+                        Interval = interval_Options[1].toDouble();
+                        widget.onIntervalChanged(Interval);
+                        widget.onInterestChanged(Interest);
                         widget.onGroupValueChanged(duration);
                       });
                       
@@ -433,7 +607,17 @@ class _durationState extends State<duration> {
                     width: 5.0,
                   ), 
 
-                  Text(Options[1]), 
+                  Text(loan_Options[1], 
+                  style : design.text_style.text_style6,
+                  ), 
+
+                  SizedBox(
+                    width: 10.0,
+                  ), 
+                  
+                  Text(text_interval[0], 
+                  style : design.text_style.text_style6,
+                  ), 
                 ]
               ),
 
@@ -441,12 +625,16 @@ class _durationState extends State<duration> {
                 children : [
                 
                   Radio(
-                    value: Options[2],
+                    value: loan_Options[2],
                     activeColor: design.custom_color.c_orange,
                     groupValue: duration,
                     onChanged: (value) {
                       setState(() {
+                        Interest = interest_Options[2].toDouble();
                         duration = value; 
+                        Interval = interval_Options[2].toDouble();
+                        widget.onIntervalChanged(Interval);
+                        widget.onInterestChanged(Interest);
                         widget.onGroupValueChanged(duration);
                       });
                       
@@ -458,7 +646,17 @@ class _durationState extends State<duration> {
                     width: 5.0,
                   ), 
 
-                  Text(Options[2]), 
+                  Text(loan_Options[2], 
+                  style : design.text_style.text_style6,
+                  ), 
+
+                  SizedBox(
+                    width: 10.0,
+                  ), 
+                  
+                  Text(text_interval[0], 
+                  style : design.text_style.text_style6,
+                  ), 
                 ]
               ),
 
@@ -466,12 +664,16 @@ class _durationState extends State<duration> {
                 children : [
                 
                   Radio(
-                    value: Options[4],
+                    value: loan_Options[3],
                     activeColor: design.custom_color.c_orange,
                     groupValue: duration,
                     onChanged: (value) {
                       setState(() {
-                        duration = value; 
+                        duration = value;
+                        Interest = interest_Options[3].toDouble();
+                        Interval = interval_Options[3].toDouble();
+                        widget.onIntervalChanged(Interval); 
+                        widget.onInterestChanged(Interest);
                         widget.onGroupValueChanged(duration);
                       });
                       
@@ -483,11 +685,172 @@ class _durationState extends State<duration> {
                     width: 5.0,
                   ), 
 
-                  Text(Options[4]), 
+                  Text(loan_Options[3], 
+                  style : design.text_style.text_style6,), 
+
+                  SizedBox(
+                    width: 10.0,
+                  ), 
+                  
+                  Text(text_interval[0], 
+                  style : design.text_style.text_style6,
+                  ), 
                 ]
               ),
 
             ],
           );
+  }
+}
+
+
+class display_loan_info extends StatefulWidget {
+  const display_loan_info({super.key, 
+    required this.loan_type, 
+    required this.initial_amount, 
+    required this.interest_rate, 
+    required this.term_duration, 
+    required this.interest_interval, 
+    required this.interest, 
+    required this.total_loan});
+
+  final String loan_type; 
+  final double initial_amount;
+  final double interest_rate; 
+  final String term_duration; 
+  final double interest_interval; 
+  final double interest;
+  final double total_loan; 
+
+  @override
+  State<display_loan_info> createState() => _display_loan_infoState(loan_type, initial_amount, interest_rate, term_duration, interest_interval, interest, total_loan);
+}
+
+class _display_loan_infoState extends State<display_loan_info> {
+
+  _display_loan_infoState(this.loan_type, this.initial_amount, this.interest_rate, this.term_duration, this.increase_interval, this.interest, this.total_loan_amount); 
+
+  final String loan_type; 
+  final double initial_amount;
+  final double interest_rate; 
+  final String term_duration; 
+  final double increase_interval; 
+  final double interest;
+  final double total_loan_amount;  
+
+  String TextInterval = ""; 
+  
+  void setTextInterval(choices){
+    if(choices == "Housing Loan"){
+      TextInterval = "Every Year";
+    }
+    else if(choices == "Medium Loan"){
+      TextInterval = "Every 6 months";
+      }
+    else if(choices == "Micro Loan"){
+      TextInterval = "Every 4 weeks";  
+    }
+  } 
+
+ @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setTextInterval(loan_type); 
+  }
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child : Column(
+        children : [
+          Row(
+            children: [
+              Text("Loan Type : ", style : design.text_style.text_style6,),
+              Spacer(),
+              Text("$loan_type", style : design.text_style.text_style6,),
+            ],        
+          ), 
+
+          SizedBox(
+            height: 10,
+          ), 
+
+          Row(
+            children: [
+              Text("Initial Loan : ", style : design.text_style.text_style6,),
+              Spacer(),
+              Text("$initial_amount", style : design.text_style.text_style6,),
+            ],
+          ),
+
+          SizedBox(
+            height: 10,
+          ),
+
+          Row(
+            children: [
+              Text("Interest Rate : ", style : design.text_style.text_style6,),
+              Spacer(),
+              Text("$interest_rate", style : design.text_style.text_style6,),
+            ],
+          ),
+
+          SizedBox(
+            height: 10,
+          ), 
+
+          Row(
+            children: [
+              Text("Loan Duration : ", style : design.text_style.text_style6,),
+              Spacer(),
+              Text("$term_duration", style : design.text_style.text_style6,),
+            ],
+          ), 
+
+          SizedBox(
+            height: 10,
+          ),
+
+          Row(
+            children: [
+              Text("Interest Interval : ", style : design.text_style.text_style6,),
+              Spacer(),
+              Text(TextInterval, style : design.text_style.text_style6,),
+            ],
+          ),
+
+          SizedBox(
+            height: 10,
+          ),
+
+          Row(
+            children: [
+              Text("Interest : ", style : design.text_style.text_style6,),
+              Spacer(),
+              Text("PHP ${interest.toStringAsFixed(2)}", style : design.text_style.text_style6,),
+            ],
+          ),
+
+          SizedBox(
+            height: 10,
+          ),
+
+          Row(
+            children: [
+              Text("Total Loan : ", style : design.text_style.text_style6,),
+              Spacer(),
+              Text("PHP ${total_loan_amount.toStringAsFixed(2)}", style : design.text_style.text_style6,),
+            ],
+          )
+
+
+
+
+        ],
+      ),
+    );
+
   }
 }

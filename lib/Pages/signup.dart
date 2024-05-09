@@ -13,7 +13,7 @@ class authentication_methods {
   String ? validate_email(text){
     final pattern = RegExp(r"^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
     if(pattern.hasMatch(text)){
-      return null; 
+      return ""; 
     }
     else {
       return "Email is not valid";
@@ -362,13 +362,16 @@ class sign_up_state extends State<sign_up>{
                                     builder: (context) => AlertDialog(
                                       actions: [
                                         TextButton(
-                                          onPressed: (){ Navigator.of(context).pop(); }, 
+                                          onPressed: (){ 
+                                            Navigator.pop(context,true); 
+                                            Navigator.pop(context,true);
+                                            }, 
                                           child: Text("Proceed")
                                         ),                            
                                       ],
                                       title : Text("Account Status"),
                                       contentPadding: EdgeInsets.all(20.0),
-                                      content : Text("Account succesfully created")
+                                      content : Text("Account application was successful. Please wait for approval!")
                                     )
                                   );
                                 }

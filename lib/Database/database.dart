@@ -16,6 +16,7 @@ class user_db{
       'Username' : username, 
       'Email' : email, 
       'Password' : password,
+      "Approval_status" : "Waiting", 
     });
   }
 
@@ -46,14 +47,13 @@ class user_db{
   }
 
   Future account_match(String username, String password) async {
-    QuerySnapshot snapshot = await User.where("Username", isEqualTo: username).where("Password", isEqualTo: password).get();
+    QuerySnapshot snapshot = await User.where("Username", isEqualTo: username)
+      .where("Password", isEqualTo: password)
+      .where("Approval_status", isEqualTo: "Approved").get();
     if (snapshot.docs.isNotEmpty) {
-      print ("1true");
-      
       return true;
     }
     else {
-      print ("1false");
       return false; 
     } 
   }
@@ -65,6 +65,90 @@ class user_db{
     int user_id = snapshot.docs.first["user_id"]; 
     return user_id; 
   }
+
+  Future get_user_info(int user_id) async {
+    QuerySnapshot snapshot = await User.where("user_id", isEqualTo: user_id).get(); 
+
+    if(snapshot.docs.isEmpty){
+      return {}; 
+    }
+    else{
+      return snapshot.docs.first.data() as Map; 
+    }
+  }
+
+  Future change_password(int user_id, String password) async {
+    QuerySnapshot snapshot = await User.where("user_id", isEqualTo: user_id).get();
+
+    if(snapshot.docs.isEmpty){
+      return "uyy"; 
+    }
+    else{
+      String doc_id = snapshot.docs.first.id; 
+
+      return User.doc(doc_id).update({
+        "Password" : password
+      }); 
+    }
+
+  }
+
+  Stream <List> get_waiting_account() async* {
+    QuerySnapshot snapshot = await User.where("Approval_status" , isEqualTo: "Waiting").get();
+
+    if(snapshot.docs.isEmpty){
+      yield []; 
+    }
+    else {
+      yield snapshot.docs; 
+    }
+  }
+
+  Future approve_account(int user_id) async {
+    QuerySnapshot snapshot = await User.where("user_id", isEqualTo: user_id)
+    .where("Approval_status" , isEqualTo: "Waiting").get();
+
+    if(snapshot.docs.isEmpty){
+      return null; 
+    }
+    else{
+      String doc_id = snapshot.docs.first.id; 
+
+      return User.doc(doc_id).update({
+        "Approval_status" : "Approved"
+      }); 
+    }
+
+  }
+
+
+  Future delete_account(int user_id) async {
+    QuerySnapshot snapshot = await User.where("user_id", isEqualTo: user_id).get();
+
+    if(snapshot.docs.isEmpty){
+      return null; 
+    }
+    else{
+      String doc_id = snapshot.docs.first.id; 
+
+      return User.doc(doc_id).delete(); 
+    }
+
+  }
+
+  Future getIDbyEmail(String email) async {
+    QuerySnapshot snapshot = await User.where("Email", isEqualTo: email).get();
+
+    if(snapshot.docs.isEmpty){
+      return -1; 
+    }
+    else{
+      return snapshot.docs.first["user_id"]; 
+    }
+  }
+
+
+
 
 }
 
@@ -103,7 +187,7 @@ class cash_funds_db {
     
     if(snapshot.docs.isNotEmpty){
       String doc_id = snapshot.docs.first.id; 
-      double balance = snapshot.docs.first["Net_contribution"];
+      double balance = snapshot.docs.first["Net_contribution"].toDouble();
       double new_balance = balance + amount; 
 
       return Cash_funds.doc(doc_id).update({
@@ -122,7 +206,7 @@ class cash_funds_db {
     
     if(snapshot.docs.isNotEmpty){
       String doc_id = snapshot.docs.first.id; 
-      double balance = snapshot.docs.first["Net_contribution"];
+      double balance = snapshot.docs.first["Net_contribution"].toDouble();
       double new_balance = balance - amount; 
 
       return Cash_funds.doc(doc_id).update({
@@ -176,12 +260,12 @@ class loan_funds_db{
   //  15 - 12 %
   //  1 M - 5 M 
 
-  Map <String, double> calculate_interest(double initial_amount, double interest_rate, int term_duration){
+  Map <String, double> calculate_interest(double initial_amount, double interest_rate, double interest_interval){
 
     double total_loan = initial_amount; 
     double interest = 0; 
 
-    for(int i = 0; i < term_duration; i++){
+    for(int i = 0; i < interest_interval; i++){
       interest += total_loan * interest_rate;
       total_loan = total_loan + interest; 
     }
@@ -193,33 +277,44 @@ class loan_funds_db{
     return loan_info; 
   }
   
-  Future housing_loan(int user_id, double loan_amount, double interest_rate, int term_duration) async {
-    QuerySnapshot snapshot = await Loan_funds.orderBy('housing_loan_id', descending: true).limit(1).get();
+  Future make_loan(int user_id, 
+    String loan_type,
+    double initial_amount, 
+    double interest_rate,
+    String term_duration,
+    double interest, 
+    double total_loan) async {
 
-    int id = snapshot.docs.first['housing_loan_id'];
-    id = 0;
+    QuerySnapshot snapshot = await Loan_funds.orderBy('Loan_id', descending: true).limit(1).get();
 
-    Map loan_info = calculate_interest(loan_amount, interest_rate, term_duration); 
-
-    double interest = loan_info["interest"]; 
-    double outstanding_balance = loan_info["total_loan"]; 
-
-    String loan_name = "Housing Loan"; 
+    int id = 0; 
+    if(snapshot.docs.isEmpty){
+      id = 0; 
+    } else {
+      id = snapshot.docs.first['Loan_id'];
+      id +=1;
+    }
+    
+     
+    
+    int dayz = convertToDays(term_duration); 
     DateTime datestart = DateTime.now(); 
-    DateTime dateEnd = DateTime.now().add(Duration(days : term_duration * 360));  
+    DateTime dateEnd = DateTime.now().add(Duration(days : dayz));  
 
+    
     return Loan_funds.add({
       "User_id" : user_id, 
       "Loan_id" : id,
-      "Loan_Name" : loan_name,
+      "Loan_type" : loan_type,
       "Date_start" : datestart,
       "Date_end" : dateEnd,  
-      "Initial_amount" : loan_amount, 
-      "Term_duration" : term_duration, 
+      "Date_payed" : "Loan is not yet fully paid",
+      "Initial_amount" : initial_amount, 
       "Interest_rate" : interest_rate,  
-      "Interest" : interest,  
-      "Outstanding_balance" : outstanding_balance,
-      "Loan_status" : "ongoing"
+      "Interest" : interest,
+      "Total_loan" : total_loan , 
+      "Outstanding_balance" : total_loan,
+      "Approval_status" : "Waiting"
     });
   }
 
@@ -229,13 +324,10 @@ class loan_funds_db{
       .where("Outstanding_balance", isGreaterThan: 0).limit(1).get(); 
 
     if(snapshot.docs.isEmpty){
-      print("yea");
       return {}; 
     }
     else{
-      print("yeahh");
       return snapshot.docs.first.data() as Map;
-
     }
 
   }
@@ -247,9 +339,226 @@ class loan_funds_db{
 
   }
 
-  
+  Future <List> get_loan_history(int user_id) async{
+    try{
+      QuerySnapshot snapshot = await Loan_funds.where("User_id", isEqualTo: user_id)
+      .orderBy("Date_start", descending: true).get(); 
+
+    if(snapshot.docs.isEmpty){
+      return []; 
+    }
+    else{
+      return snapshot.docs;
+    }
+
+  }
+  catch(e){
+    print("Error fetching loan information: $e");
+    throw e;
+  }
+    
+
+  }
+
+  Stream get_waiting_loan() async*{
+    QuerySnapshot snapshot = await Loan_funds.where("Approval_status" , isEqualTo: "Waiting").get();
+    user_db user = user_db(); 
+
+    List results = [];
+    
+    if(snapshot.docs.isEmpty){
+      yield []; 
+    }
+    else {
+
+      for(int i = 0; i < snapshot.docs.length ; i++){
+
+        int user_id = snapshot.docs[i]["User_id"] as int;
+        QuerySnapshot snapshot_user = await user.User.where("user_id" , isEqualTo: user_id).get();
+
+        results.add({
+          "user_info" : snapshot_user.docs.first.data(), 
+          "loan_info" : snapshot.docs[i].data(), 
+        });
+
+      }
+
+      yield results; 
+    }
+
+  }
+
+  Future approve_loan(int loan_id) async {
+    QuerySnapshot snapshot = await Loan_funds.where("Loan_id" , isEqualTo: loan_id).get();
+
+    if(snapshot.docs.isNotEmpty){
+      String doc_id = snapshot.docs.first.id; 
+      return Loan_funds.doc(doc_id).update({
+        "Approval_status" : "Approved"
+      }); 
+      
+    }
+    else {
+      print("Cash Fund not found");
+      return null; 
+    }
+
+  }
+
+  Future delete_loan(int loan_id) async {
+    QuerySnapshot snapshot = await Loan_funds.where("Loan_id" , isEqualTo: loan_id).get();
+
+    if(snapshot.docs.isNotEmpty){
+      String doc_id = snapshot.docs.first.id; 
+      return Loan_funds.doc(doc_id).delete(); 
+      
+    }
+    else {
+      print("Cash Fund not found");
+      return null; 
+    }
+
+  }
+
+
+
+  Future pay_loan(int loan_id, double amount) async{
+    QuerySnapshot snapshot = await Loan_funds.where("Loan_id", isEqualTo: loan_id).get();
+    
+    if(snapshot.docs.isNotEmpty){
+      String doc_id = snapshot.docs.first.id; 
+      double balance = snapshot.docs.first["Outstanding_balance"].toDouble();
+      double new_balance = balance - amount; 
+      print("$new_balance"); 
+      return Loan_funds.doc(doc_id).update({
+        "Outstanding_balance" : new_balance
+      }); 
+      
+    }
+    else {
+      print("Cash Fund not found");
+      return null; 
+    }
+
+  }
+
+  Future setLoanInvalid(int loan_id) async {
+    QuerySnapshot snapshot = await Loan_funds.where("Loan_id", isEqualTo: loan_id).get();
+
+    if(snapshot.docs.isNotEmpty){
+      String doc_id = snapshot.docs.first.id; 
+      double balance = snapshot.docs.first["Outstanding_balance"];
+
+      if(balance <= 0){
+        DateTime payed = DateTime.now(); 
+        return Loan_funds.doc(doc_id).update({
+          "Date_payed" : payed
+      }); 
+      }
+    }
+
+    else{}
+  }
 
   
-
+  int convertToDays(String interval) {
+    switch (interval) {
+      case '8 weeks':
+        return 8 * 7;
+      case '12 weeks':
+        return 12 * 7;
+      case '16 weeks':
+        return 20 * 7;
+      case '20 weeks':
+        return 20 * 7;
+      case '6 months':
+        return 6 * 30;
+      case '12 months':
+        return 12 * 30;
+      case '18 months':
+        return 18 * 30;
+      case '24 months':
+        return 24 * 30;
+      case '3 years':
+        return 3 * 365;
+      case '6 years':
+        return 6 * 365;
+      case '9 years':
+        return 9 * 365;
+      case '12 years':
+        return 12 * 365;
+      default:
+        return 0; // Return 0 for invalid input
+    }
+  }
  
+}
+
+
+
+class receipt {
+  final CollectionReference Receipts = FirebaseFirestore.instance.collection("Receipts");
+
+  Future add_recepit(int user_id, String transaction, double amount) async {
+    
+    DateTime date = DateTime.now();     
+    QuerySnapshot snapshot = await Receipts.orderBy('Transaction_id', descending: true).limit(1).get();
+
+    int id = -1; 
+
+    if(snapshot.docs.isNotEmpty){
+      id = snapshot.docs.first["Transaction_id"];
+      id += 1; 
+    }
+    else {
+      id += 1; 
+    }
+     
+
+    return Receipts.add({
+      "Transaction_id" : id, 
+      "User_id" : user_id,
+      "Transaction" : transaction, 
+      "Date" : date, 
+      "Amount" : amount
+    }); 
+  }
+
+  Future get_receipt_id(int user_id) async {
+    QuerySnapshot snapshot = await Receipts.where("User_id", isEqualTo: user_id).orderBy('Transaction_id', descending: true).limit(1).get();
+
+    if(snapshot.docs.isNotEmpty){
+      return snapshot.docs.first["Transaction_id"];
+    }
+    else {
+      return "Document Not Found"; 
+    }
+
+  }
+
+  Future <Map> get_receipt(int transaction_id) async {
+    QuerySnapshot snapshot = await Receipts.where("Transaction_id", isEqualTo: transaction_id).get(); 
+
+    if(snapshot.docs.isEmpty){
+      return {}; 
+    }
+    else {
+      return snapshot.docs.first.data() as Map; 
+    }
+    
+  }
+
+  Future <List> get_history(int user_id) async {
+    QuerySnapshot snapshot = await Receipts.where("User_id", isEqualTo: user_id).orderBy("Date", descending: true).get(); 
+
+    if(snapshot.docs.isEmpty){
+      return [];
+    }
+    else {
+      return snapshot.docs as List; 
+    }
+
+  }
+
+
 }

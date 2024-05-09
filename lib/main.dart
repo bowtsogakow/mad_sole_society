@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sole_society/BarTop/bar_top.dart';
+import 'package:sole_society/Pages/Admin_landing.dart';
 import 'package:sole_society/Pages/Landing.dart';
 import 'package:sole_society/Pages/signup.dart';
 import 'package:sole_society/Pages/login.dart';
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF333333)),
         useMaterial3: true,
       ),
-      home: Opening(),
+      home: Landing(user_id: 1, index: 0,),
     );
   }
 }

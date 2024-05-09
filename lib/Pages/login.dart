@@ -1,11 +1,11 @@
-// ignore_for_file: prefer_const_constructors, camel_case_types, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, camel_case_types, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
-import "package:sole_society/Database/database.dart";
 import 'package:flutter/material.dart';
 import 'package:sole_society/Pages/Landing.dart';
 import 'package:sole_society/Pages/signup.dart' as sign_up;
 import 'package:sole_society/Pages/Design.dart' as design;
 import 'package:sole_society/Database/database.dart' as db;
+import 'package:sole_society/Pages/Admin_landing.dart';
 
 class log_in extends StatefulWidget {
  
@@ -17,7 +17,7 @@ class log_in extends StatefulWidget {
 class  log_in_State extends State<log_in> {
 
 
-  user_db DB = user_db();
+  db.user_db DB = db.user_db();
   sign_up.authentication_methods auth = sign_up.authentication_methods();
 
   TextEditingController username = TextEditingController();
@@ -192,10 +192,8 @@ class  log_in_State extends State<log_in> {
                               onPressed: () async {
                                 
                                 await setEmptyError();
-                                print("5");
-                                print(statusEmpty); 
                                 if(statusEmpty == true){
-                                  // ignore: use_build_context_synchronously
+                                 
                                   showDialog(context: context, 
                                     builder: (context) => AlertDialog(
                                       actions: [
@@ -203,12 +201,29 @@ class  log_in_State extends State<log_in> {
                                           onPressed: () async { 
                                             int user_id = await DB.get_ID(username.text, password.text) as int;
                                             
+                                            Navigator.pop(context,true); 
+                                            Navigator.pop(context,true); 
+                                            Navigator.pop(context,true); 
 
-                                            // ignore: use_build_context_synchronously
-                                            Navigator.push(
-                                              context,
-                                               MaterialPageRoute(builder: (context) => Landing(user_id:user_id)),
-                                            ); }, 
+                                            if(user_id == 0){
+
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => Admin_landing(user_id:user_id, index: 0,)),
+                                              ); 
+
+                                            }
+
+                                            else{
+                                                Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => Landing(user_id:user_id, index : 0 )),
+                                              ); 
+                                            
+                                            }
+                                              
+                                            
+                                            }, 
                                           child: Text("Proceed")
                                         ),                            
                                       ],
@@ -217,10 +232,7 @@ class  log_in_State extends State<log_in> {
                                       content : Text("Logged in succesfully")
                                     )
                                   );
-                                  
-                                  
 
-                            
                                 }
                                 
                               },                 
