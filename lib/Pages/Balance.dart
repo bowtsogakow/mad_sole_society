@@ -146,6 +146,7 @@ class balance_state extends State<balance> {
                                       onPressed: (){
                                         Navigator.pop(context, true);
                                         Navigator.pop(context, true);
+                                       
                                         Navigator.push(
                                         context,
                                         MaterialPageRoute(builder: ((context) => Landing(user_id: user_id, index: 0,))));  
@@ -220,7 +221,6 @@ class balance_state extends State<balance> {
                                   
                                   setState(() {                         
                                     errorWithdraw = checkAmount(Balance, amount);
-                                    print("$errorWithdraw");
                                   });
                                   
                                   if(errorWithdraw == ""){
@@ -235,6 +235,7 @@ class balance_state extends State<balance> {
                                         actions : [
                                           TextButton(
                                             onPressed: (){
+                                              Navigator.pop(context, true);
                                               Navigator.pop(context, true);
                                               Navigator.pop(context, true);
                                               Navigator.push(
@@ -352,6 +353,7 @@ class balance_state extends State<balance> {
                                           actions : [
                                             TextButton(
                                               onPressed: (){
+                                                Navigator.pop(context, true);
                                                 Navigator.pop(context, true);
                                                 Navigator.pop(context, true);
                                                 Navigator.push(

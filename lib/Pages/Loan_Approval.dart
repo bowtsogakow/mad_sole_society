@@ -209,7 +209,7 @@ class loan_approval_state extends State<loan_approval> {
 
                           Align(
                           alignment: Alignment.topLeft,
-                          child: Text ("PHP $interest",
+                          child: Text ("PHP ${interest.toStringAsFixed(2)}",
                               style : design.text_style.text_style8),
                           )
 
@@ -231,7 +231,7 @@ class loan_approval_state extends State<loan_approval> {
 
                           Align(
                           alignment: Alignment.topLeft,
-                          child: Text ("PHP $total_loan",
+                          child: Text ("PHP ${total_loan.toStringAsFixed(2)}",
                               style : design.text_style.text_style8),
                           )
 
@@ -260,7 +260,7 @@ class loan_approval_state extends State<loan_approval> {
                                  
                               }, 
                               child: Text( // ignore: sort_child_properties_last
-                                    'APPROVED',
+                                    'APPROVE',
                                     style: design.text_style.text_style2, // Set text color,
                               ),
                               style: ElevatedButton.styleFrom(
@@ -290,7 +290,7 @@ class loan_approval_state extends State<loan_approval> {
 
                               }, 
                               child: Text( // ignore: sort_child_properties_last
-                                    'REJECTED',
+                                    'REJECT',
                                     style: design.text_style.text_style2, // Set text color,
                               ),
                               style: ElevatedButton.styleFrom(

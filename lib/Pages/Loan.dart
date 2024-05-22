@@ -114,9 +114,7 @@ class loan_state extends State<loan> {
                       ), 
                     ),
 
-                    SizedBox(
-                      width : 150
-                    ),
+                    Spacer(), 
 
                     
                   ],

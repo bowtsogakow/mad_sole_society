@@ -99,9 +99,6 @@ class sign_up_state extends State<sign_up>{
     bool statusUsername = await DB.username_exist(username.text);
     bool statusEmail = await DB.email_exist(email.text); 
 
-    print(statusUsername);
-    print(statusEmail); 
-
     if(statusEmail == true){
       existEmail = "Username already exist!"; 
     }
@@ -349,7 +346,6 @@ class sign_up_state extends State<sign_up>{
                               onPressed: () async {
                                 
                                 await setEmptyError();
-                                print(statusEmpty); 
                                 if(statusEmpty == true){
                                   DB.add_user(username.text, email.text, password.text);
                                   username.clear(); 

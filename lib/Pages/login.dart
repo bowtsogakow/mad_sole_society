@@ -52,7 +52,6 @@ class  log_in_State extends State<log_in> {
       if(match == false){
       errorUsername = "Credentials do not match our system"; 
       errorPassword = "Credentials do not match our system";
-      print(errorUsername);
       }
      
     });

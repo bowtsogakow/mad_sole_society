@@ -202,8 +202,7 @@ class Landing_State extends State<Landing>{
                                 return Text("You have not yet made your first transaction!");
                               }
                             }
-                            else{
-                              print("$snapshot"); 
+                            else{ 
                               return CircularProgressIndicator(); 
                             }
                           }, 

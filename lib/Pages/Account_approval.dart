@@ -114,7 +114,7 @@ class account_approval_state extends State<account_approval> {
                                 ); 
                               }, 
                               child: Text( // ignore: sort_child_properties_last
-                                    'APPROVED',
+                                    'APPROVE',
                                     style: design.text_style.text_style2, // Set text color,
                               ),
                               style: ElevatedButton.styleFrom(
@@ -140,7 +140,7 @@ class account_approval_state extends State<account_approval> {
                                 ); 
                               }, 
                               child: Text( // ignore: sort_child_properties_last
-                                    'REJECTED',
+                                    'REJECT',
                                     style: design.text_style.text_style2, // Set text color,
                               ),
                               style: ElevatedButton.styleFrom(

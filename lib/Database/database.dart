@@ -23,12 +23,10 @@ class user_db{
   Future username_exist(String username) async {
     QuerySnapshot snapshot = await User.where("Username", isEqualTo: username).get();
     if (snapshot.docs.isNotEmpty) {
-      print ("ttrue");
       return true;
       
     }
     else {
-      print ("ffalse");
       return false; 
       
     } 
@@ -37,11 +35,9 @@ class user_db{
   Future email_exist(String email) async {
     QuerySnapshot snapshot = await User.where("Email", isEqualTo: email).get();
     if (snapshot.docs.isNotEmpty) {
-      print ("ttrue");
       return true;
     }
     else {
-      print ("ffalse");
       return false; 
     } 
   }
@@ -81,7 +77,7 @@ class user_db{
     QuerySnapshot snapshot = await User.where("user_id", isEqualTo: user_id).get();
 
     if(snapshot.docs.isEmpty){
-      return "uyy"; 
+      return ""; 
     }
     else{
       String doc_id = snapshot.docs.first.id; 

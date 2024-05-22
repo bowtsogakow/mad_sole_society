@@ -220,13 +220,10 @@ class _profileState extends State<profile> {
                           onPressed: () async {
                             setState(() {
                               match(); 
-                              print("$password_db"); 
-                              print(password.text); 
                             });(); 
 
                             if(error_password == ""){
                               await user.change_password(user_id, new_password.text); 
-                              print("eyy");
 
                               // ignore: use_build_context_synchronously
                               showDialog(context: context, 

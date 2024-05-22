@@ -189,9 +189,10 @@ class init_loan_state extends State<init_loan> {
                                                     builder: (context) => AlertDialog(
                                                       actions : [
                                                         TextButton(
-                                                          onPressed: (){
+                                                          onPressed: ()async {
+                                                            await loan.make_loan(user_id, loan_type, initial_amount, interest_rate, term_duration, interest, total_loan);
                                                             Navigator.pop(context, true); 
-                                                            loan.make_loan(user_id, loan_type, initial_amount, interest_rate, term_duration, interest, total_loan);
+
                                                             Navigator.pop(context, true); 
                                                             Navigator.push(
                                                               context, 
@@ -233,7 +234,7 @@ class init_loan_state extends State<init_loan> {
                                             contentPadding: EdgeInsets.symmetric(horizontal : 10, vertical : 20,),
                                             content : SizedBox(
                                               height: 200,
-                                              width : 300, 
+                                              width : 350, 
                                               child : duration(
                                                 onIntervalChanged: (selectedValue){
                                                   setState(() {
@@ -512,21 +513,21 @@ class _durationState extends State<duration> {
       loan_Options = ["3 years", "6 years", "9 years", "12 years"]; 
       interest_Options = [0.09, 0.10, 0.11, 0.12];
       interval_Options = [3, 6, 9, 12];
-      text_interval = [" (9% interest per year)", " (10% interest per year)", " (11% interest per year)", " (12% interest per year)"];
+      text_interval = [" (9% / year)", " (10% / year)", " (11% / year)", " (12% / year)"];
     }
     else if(choices == "Medium Loan"){
       loan_Options = ["6 months ", "12 months", 
       "18 months ", "24 months"];
       interest_Options = [0.05, 0.05, 0.06, 0.06];
       interval_Options = [1, 2, 3, 4]; 
-      text_interval = [" (5% interest per 6 months)", " (5% interest per 6 months)", " (6% interest per 6 months)", " (6% interest per 6 months)"];
+      text_interval = [" (5% / 6 months)", " (5% / 6 months)", " (6% / 6 months)", " (6% / 6 months)"];
     }
     else if(choices == "Micro Loan"){
       loan_Options = ["8 weeks", "12 weeks", 
       "16 weeks", "20 weeks"];
       interest_Options = [0.04, 0.04, 0.04, 0.04];
       interval_Options = [2, 3, 4, 5];
-      text_interval = [ " (4% interest per 4 weeks)", " (4% interest per 4 weeks)", " (4% interest per 4 weeks)", " (4% interest per 4 weeks)"];
+      text_interval = [ " (4% / 4 weeks)", " (4% / 4 weeks)", " (4% / 4 weeks)", " (4% / 4 weeks)"];
     }
 
   }
@@ -615,7 +616,7 @@ class _durationState extends State<duration> {
                     width: 10.0,
                   ), 
                   
-                  Text(text_interval[0], 
+                  Text(text_interval[1], 
                   style : design.text_style.text_style6,
                   ), 
                 ]
@@ -654,7 +655,7 @@ class _durationState extends State<duration> {
                     width: 10.0,
                   ), 
                   
-                  Text(text_interval[0], 
+                  Text(text_interval[2], 
                   style : design.text_style.text_style6,
                   ), 
                 ]
@@ -692,7 +693,7 @@ class _durationState extends State<duration> {
                     width: 10.0,
                   ), 
                   
-                  Text(text_interval[0], 
+                  Text(text_interval[3], 
                   style : design.text_style.text_style6,
                   ), 
                 ]

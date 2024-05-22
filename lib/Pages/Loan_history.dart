@@ -37,15 +37,10 @@ class loan_history_state extends State<loan_history> {
           child: FutureBuilder(
             future : loan.get_loan_history(user_id),
             builder : (context, snapshot){
-                print("$snapshot");
-                print("sheesh"); 
               if(snapshot.hasData){
-                  print("$snapshot"); 
                 List history = []; 
-                history = snapshot.data as List;
-          
+                history = snapshot.data as List;         
                 if(history.isNotEmpty){
-                    print("$snapshot");
                     return Center(
                       child : Column(
                         children: [
@@ -148,12 +143,10 @@ class loan_history_state extends State<loan_history> {
                     ); 
                 }
                 else{
-                    print("$snapshot"); 
                   return Text("You have not yet made your first transaction!");
                 }
               }
               else{
-                print("$snapshot"); 
                 return CircularProgressIndicator(); 
               }
             }, 

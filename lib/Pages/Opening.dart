@@ -15,8 +15,8 @@ class Opening extends StatelessWidget{
           children: [
 
             const Flexible (
-              flex : 0, 
-              fit : FlexFit.loose,
+              flex : 1, 
+              fit : FlexFit.tight,
               child : SizedBox(height: 85),
             ),
             Image.asset(

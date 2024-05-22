@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF333333)),
         useMaterial3: true,
       ),
-      home: Landing(user_id: 1, index: 0,),
+      home: Opening(),
     );
   }
 }
